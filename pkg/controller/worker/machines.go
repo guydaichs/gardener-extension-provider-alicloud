@@ -133,6 +133,26 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				systemDisk["category"] = *pool.Volume.Type
 			}
 
+			var dataDisks []map[string]interface{}
+			for _, vol := range pool.DataVolumes {
+				volumeName := vol.Name
+				volumeType := vol.Type
+				volumeSize, err := worker.DiskSize(vol.Size)
+				if err != nil {
+					return err
+				}
+				disk := map[string]interface{}{
+					"size": volumeSize,
+				}
+				if vol.Type != nil {
+					disk["category"] = *volumeType
+				}
+				disk["encrypted"] = vol.Encrypted
+				disk["name"] = *volumeName
+				disk["deleteWithInstance"] = true
+				dataDisks = append(dataDisks, disk)
+			}
+
 			machineClassSpec := map[string]interface{}{
 				"imageID":                 machineImageID,
 				"instanceType":            pool.MachineType,
@@ -141,6 +161,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				"securityGroupID":         nodesSecurityGroup.ID,
 				"vSwitchID":               nodesVSwitch.ID,
 				"systemDisk":              systemDisk,
+				"dataDisks":               dataDisks,
 				"instanceChargeType":      "PostPaid",
 				"internetChargeType":      "PayByTraffic",
 				"internetMaxBandwidthIn":  5,
