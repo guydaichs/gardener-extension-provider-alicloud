@@ -18,12 +18,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"path/filepath"
-
 	"github.com/gardener/gardener-extension-provider-alicloud/pkg/alicloud"
 	api "github.com/gardener/gardener-extension-provider-alicloud/pkg/apis/alicloud"
 	apiv1alpha1 "github.com/gardener/gardener-extension-provider-alicloud/pkg/apis/alicloud/v1alpha1"
 	. "github.com/gardener/gardener-extension-provider-alicloud/pkg/controller/worker"
+	"path/filepath"
 
 	extensionscontroller "github.com/gardener/gardener/extensions/pkg/controller"
 	"github.com/gardener/gardener/extensions/pkg/controller/common"
@@ -107,7 +106,9 @@ var _ = Describe("Machines", func() {
 				volumeType string
 				volumeSize int
 				nameVol1   string
+				encryptedVol1 bool
 				nameVol2   string
+				encryptedVol2 bool
 
 
 				namePool1           string
@@ -166,6 +167,8 @@ var _ = Describe("Machines", func() {
 				volumeSize = 20
 				nameVol1 = "vol-1"
 				nameVol2 = "vol-2"
+				encryptedVol1 = true
+				encryptedVol2 = false
 
 				namePool1 = "pool-1"
 				minPool1 = 5
@@ -293,13 +296,13 @@ var _ = Describe("Machines", func() {
 										Name:      &nameVol1,
 										Type:      &volumeType,
 										Size:      fmt.Sprintf("%dGi", volumeSize),
-										Encrypted: true,
+										Encrypted: &encryptedVol1,
 									},
 									{
 										Name:      &nameVol2,
 										Type:      &volumeType,
 										Size:      fmt.Sprintf("%dGi", volumeSize),
-										Encrypted: false,
+										Encrypted: &encryptedVol1,
 									},
 								},
 								Zones: []string{
@@ -328,13 +331,13 @@ var _ = Describe("Machines", func() {
 										Name: &nameVol1,
 										Type: &volumeType,
 										Size: fmt.Sprintf("%dGi", volumeSize),
-										Encrypted: true,
+										Encrypted: &encryptedVol1,
 									},
 									{
 										Name: &nameVol2,
 										Type: &volumeType,
 										Size: fmt.Sprintf("%dGi", volumeSize),
-										Encrypted: false,
+										Encrypted: &encryptedVol2,
 									},
 								},
 								Zones: []string{
